@@ -1,16 +1,20 @@
 package org.example.view.console;
 
-import org.example.controller.BankAccountController;
-import org.example.controller.ControllerManager;
-import org.example.controller.OwnerController;
+import org.example.controller.*;
 import org.example.model.Account;
+import org.example.model.Transaction;
+import org.example.model.TransactionType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleApp {
-    private BankAccountController bankAccountController;
+    private BankAccountController bankAccountControllerWithdraw;
+    private BankAccountController bankAccountControllerDeposit;
+    private TransactionsController transactionsController;
     private OwnerController ownerController;
+    private AccountBalanceController accountBalanceController;
 
     public static void main(String[] args) {
         new ConsoleApp().run();
@@ -18,8 +22,11 @@ public class ConsoleApp {
 
     public ConsoleApp() {
         ControllerManager controllerManager = new ControllerManager();
-        bankAccountController = controllerManager.getAccountController();
+        bankAccountControllerWithdraw = controllerManager.getAccountController();
+        bankAccountControllerDeposit = controllerManager.getAccountControllerDeposit();
+        transactionsController = controllerManager.getTransactionsControler();
         ownerController = controllerManager.getOwnerController();
+        accountBalanceController = controllerManager.getBalanceController();
     }
 
     public void run() {
@@ -70,15 +77,22 @@ public class ConsoleApp {
                     case 'A':
                         showMainMenu();
                         break;
+                    case 'B':
+                        print("My Balance is ... " + myBalance(accountId));
+                        //myBalance(accountId);
+                        break;
+                    case 'D':
+                        deposit(scanner, accountId);
+                        break;
                     case 'E':
                         print("Exit...");
                         closeApp = true;
                         break;
-                    case 'B':
-                        print("My Balance is ...");
+                    case 'T':
+                        myTransactions(accountId);
                         break;
                     case 'W':
-                        withdraw(scanner, accountId);
+                        withdraw(scanner, accountId, myBalance(accountId));
                         break;
                     default:
                         print(option + " is an invalid option");
@@ -99,10 +113,49 @@ public class ConsoleApp {
         return scanner.next().trim().toUpperCase().charAt(0);
     }
 
-    private void withdraw(Scanner scanner, int accountId) {
+//    private void withdraw(Scanner scanner, int accountId) {
+//        System.out.print("Enter amount you need to withdraw: ");
+//        double amount = scanner.nextDouble();
+//        if (myBalance(accountId) >= amount) {
+//            bankAccountControllerWithdraw.withdraw(accountId, amount);
+//            System.out.println("successful withdraw operation");
+//        } else {
+//            System.out.println("You don't have enough funds to withdraw " + amount);
+//        }
+//    }
+
+//    private void withdraw(Scanner scanner, int accountId, double balance) {
+//        System.out.print("Enter amount you need to withdraw: ");
+//        double amount = scanner.nextDouble();
+//        if (balance >= amount) {
+//            bankAccountControllerWithdraw.withdraw(accountId, amount);
+//            System.out.println("successful withdraw operation");
+//        } else {
+//            System.out.println("You don't have enough funds to withdraw " + amount);
+//        }
+//    }
+
+    private void withdraw(Scanner scanner, int accountId, double balance) {
         System.out.print("Enter amount you need to withdraw: ");
         double amount = scanner.nextDouble();
-        bankAccountController.withdraw(accountId, amount);
-        System.out.println("successful withdraw operation");
+        bankAccountControllerWithdraw.withdraw(accountId, amount, balance);
+    }
+
+    private void deposit(Scanner scanner, int accountId) {
+        System.out.print("Enter amount you want to deposit: ");
+        double amount = scanner.nextDouble();
+        bankAccountControllerDeposit.deposit(accountId, amount);
+        System.out.println("successful deposit operation");
+    }
+
+    private void myTransactions(int accountId) {
+
+        for (Transaction transaction : transactionsController.getTransactionsByAccount(accountId)) {
+            System.out.println(transaction.toString());
+        }
+    }
+
+    private double myBalance(int accountId) {
+        return accountBalanceController.getBalanceByAccount(accountId);
     }
 }

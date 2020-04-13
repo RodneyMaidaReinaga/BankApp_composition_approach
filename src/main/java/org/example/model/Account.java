@@ -25,4 +25,6 @@ public class Account {
     public String getOwnerId() {
         return ownerId;
     }
+
+    public List<Transaction> getTransactions() { return transactions; }
 }

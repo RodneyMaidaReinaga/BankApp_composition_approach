@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public class DataInMemory {
     private static DataInMemory INSTANCE;
+
     private List<Owner> owners;
     private List<Account> accounts;
     private List<Transaction> transactions;
