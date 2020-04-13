@@ -21,4 +21,21 @@ public class Transaction {
     public int getAccountId() {
         return accountId;
     }
+
+    public double getAmount() {
+        return this.amount;
+    }
+
+    public TransactionType getTransactionType() {
+        return this.type;
+    }
+
+    public LocalDateTime getDateTime() {
+        return this.dateTime;
+    }
+
+    @Override
+    public String toString() {
+        return getTransactionType() + " - amount: " + getAmount() + " - " + getDateTime();
+    }
 }
